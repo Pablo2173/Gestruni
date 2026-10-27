@@ -1,8 +1,19 @@
+:root {
+    --verde: #344130;
+    --verde-claro: #4b5d45;
+    --beige: #d3c6b0;
+    --gris-claro: #d9d9d9;
+    --gris-barra: #adadad;
+    --gris-tarjeta: #898989;
+    --texto: #1f2a1c;
+}
 
 body {
+    margin: 0;
+    min-height: 100em;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    padding: 20px;
+    background-color: var(--beige);
+    padding: 20em;
 }
 h1 {
     color: #2e7d32;
@@ -10,4 +21,15 @@ h1 {
 a {
     text-decoration: none;
     color: #1b5e20;
+}
+.navbar{
+    background-color: rgb(139, 139, 124);
+}
+.navbar-brand {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0d6efd !important;
 }
