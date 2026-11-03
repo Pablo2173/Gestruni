@@ -1,5 +1,7 @@
+//El modo estricto de JavaScript detecta errores comunes
 'use strict';
 
+// recupera en constantes los elementos del formulario y los campos de entrada
 const registroForm = document.querySelector('#registro-form');
 const nombre = document.querySelector('#nombre');
 const correo = document.querySelector('#correo');
@@ -21,6 +23,8 @@ function contrasenyasIguales() {
 contrasena.addEventListener('input', contrasenyasIguales);
 confirmacionContrasena.addEventListener('input', contrasenyasIguales);
 
+//campo puede ser: {nombre, correo, contrasena, confirmacionContrasena}
+//tiene comprobaciones generales de validación aplicables a todos los posibles campos
 function mostrarError(campo) {
     const mensaje = document.querySelector(`#${campo.id}-error`);
     campo.classList.add('is-invalid');
@@ -50,10 +54,15 @@ registroForm.addEventListener('submit', (event) => {
     const nombreIntroducido = nombre.value.trim();
     const correoIntroducido = correo.value.trim();
 
+    // Limpia los errores de validación anteriores
+
     limpiarError(nombre);
     limpiarError(correo);
     limpiarError(contrasena);
     limpiarError(confirmacionContrasena);
+
+
+    // Comprueba la validez de cada campo y muestra los errores correspondientes
 
     if (!nombre.validity.valid) {
         mostrarError(nombre);
@@ -71,11 +80,13 @@ registroForm.addEventListener('submit', (event) => {
         mostrarError(confirmacionContrasena);
     }
 
+    //Comprueba la validez del formulario copmleto
     if (!registroForm.checkValidity()) {
         registroForm.reportValidity();
         return;
     }
 
+    //Muestra la confirmación en el DOM
     registroMensaje.textContent =
         `Registro completado para ${nombreIntroducido} (${correoIntroducido}).`;
     registroMensaje.className = 'mt-3 mb-0 text-success';
