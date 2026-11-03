@@ -18,6 +18,10 @@ h1 {
     color: #2e7d32;
 }
 
+.navbar .navbar-brand {
+    color: #2e7d32;
+}
+
 a {
     text-decoration: none;
     color: #1b5e20;
