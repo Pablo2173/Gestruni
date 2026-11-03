@@ -1,24 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestruni login</title>
     <link rel="stylesheet" href="../public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/css/style.css">
 </head>
-<body>
+
+<body class="pagina-login">
     <main class="container">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="./index.html">Inicio</a>
-            </li>
-            <li class="breadcrumb-item active">
-                <a href="./login.html" aria-current="page">Login</a>
-            </li>
-        </ol>
-    </nav>
-        <h2>Login</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="./index.html">Inicio</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Login</li>
+            </ol>
+        </nav>
+
+        <!-- Formulario de login con estilo de registro -->
+        <section class="registro-card mx-auto" aria-labelledby="titulo-login">
+            <h1 id="titulo-login" class="h2 mb-4">Iniciar sesión</h1>
+
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="login-correo" class="form-label">Correo electrónico</label>
+                    <input type="email" class="form-control" id="login-correo" name="correo" autocomplete="email"
+                        required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="login-contrasena" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="login-contrasena" name="contrasena"
+                        autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Entrar</button>
+            </form>
+
+            <!--enlace a la página de registro-->
+            <p class="mt-4 mb-0">
+                ¿No tienes cuenta?
+                <a href="./register.html">Regístrate</a>.
+            </p>
+        </section>
     </main>
 </body>
+
 </html>
