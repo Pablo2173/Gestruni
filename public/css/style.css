@@ -10,10 +10,8 @@
 
 body {
     margin: 0;
-    min-height: 100vh;
     font-family: Arial, sans-serif;
     background-color: var(--beige);
-    padding: 1rem;
 }
 
 h1 {
@@ -44,17 +42,8 @@ a {
     outline-offset: 3px;
 }
 
-/* para el registro y login */
-
-body.pagina-registro,
-body.pagina-login {
-    min-height: 100vh;
-    padding: 1rem;
-}
-
 .registro-card {
     max-width: 32rem;
-    padding: 2rem;
     background-color: #fff;
     border-radius: 0.5rem;
     box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 10%);
