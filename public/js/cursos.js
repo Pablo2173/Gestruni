@@ -28,6 +28,23 @@ const cursos = [
 //localiza el contenedor html donde se muestran los cursos
 const catalogoCursos = document.querySelector('#catalogo-cursos');
 
+//localiza los elementos del formulario de alta de cursos
+const altaCursoForm = document.querySelector('#alta-curso-form');
+const identificadorCurso = document.querySelector('#curso-identificador');
+const nombreCurso = document.querySelector('#curso-nombre');
+const categoriaCurso = document.querySelector('#curso-categoria');
+const duracionCurso = document.querySelector('#curso-duracion');
+const plazasCurso = document.querySelector('#curso-plazas');
+
+//localiza los elementos del buscador de cursos
+const busquedaCursosForm = document.querySelector('#busqueda-cursos-form');
+const busquedaCursos = document.querySelector('#busqueda-cursos');
+const modalConfirmacion = document.querySelector('#confirmar-eliminacion');
+const mensajeConfirmacion = document.querySelector('#mensaje-confirmar-eliminacion');
+const borrarCurso = document.querySelector('#borrar-curso');
+const modalEliminacion = new bootstrap.Modal(modalConfirmacion);
+let cursoPendienteEliminar;
+
 //función reutilizable para crear una línea de información de un curso (Categoría, Programación web)
 //crea un nuevo elemento en memoria (Categoría en negrita <strong> y Programación web en texto normal)
 function crearDatoCurso(etiqueta, valor) {
@@ -56,7 +73,7 @@ function crearTarjetaCurso(curso) {
     tarjeta.className = 'card h-100 shadow-sm';
 
     const cuerpoTarjeta = document.createElement('div');
-    cuerpoTarjeta.className = 'card-body';
+    cuerpoTarjeta.className = 'card-body d-flex flex-column';
 
     const titulo = document.createElement('h3');
     titulo.className = 'card-title h5';
@@ -67,19 +84,30 @@ function crearTarjetaCurso(curso) {
     const duracion = crearDatoCurso('Duración', curso.duracion);
     const plazas = crearDatoCurso('Plazas disponibles', curso.plazasDisponibles);
 
-    cuerpoTarjeta.append(titulo, identificador, categoria, duracion, plazas);
+    const botonEliminar = document.createElement('button');
+    botonEliminar.className = 'btn btn-danger align-self-start mt-auto';
+    botonEliminar.type = 'button';
+    botonEliminar.textContent = 'Eliminar';
+    botonEliminar.addEventListener('click', () => {
+        cursoPendienteEliminar = curso;
+        mensajeConfirmacion.textContent =
+            `¿Estás seguro de eliminar el curso ${curso.nombre}?`;
+        modalEliminacion.show();
+    });
+
+    cuerpoTarjeta.append(titulo, identificador, categoria, duracion, plazas, botonEliminar);
     tarjeta.append(cuerpoTarjeta);
     columna.append(tarjeta);
 
     return columna;
 }
 
-function mostrarCursos() {
+function mostrarCursos(cursosAMostrar = cursos) {
     //vacía el contenedor de cursos antes de mostrar los cursos actuales
     catalogoCursos.replaceChildren();
 
     //si no hay cursos, muestra un mensaje en lugar de las tarjetas
-    if (cursos.length === 0) {
+    if (cursosAMostrar.length === 0) {
         const mensaje = document.createElement('p');
         mensaje.className = 'col-12';
         mensaje.textContent = 'No hay cursos disponibles en este momento.';
@@ -88,9 +116,55 @@ function mostrarCursos() {
     }
 
     //recorre el array de cursos y crea una tarjeta para cada curso, añadiéndola al contenedor
-    cursos.forEach((curso) => {
+    cursosAMostrar.forEach((curso) => {
         catalogoCursos.append(crearTarjetaCurso(curso));
     });
 }
+
+//borra del array el curso confirmado y vuelve a mostrar el catálogo
+borrarCurso.addEventListener('click', () => {
+    const posicionCurso = cursos.indexOf(cursoPendienteEliminar);
+    cursos.splice(posicionCurso, 1);
+    modalEliminacion.hide();
+    mostrarCursos();
+});
+
+//filtra los cursos por nombre cuando se envía el formulario de búsqueda
+busquedaCursosForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const textoBusqueda = busquedaCursos.value.trim().toLowerCase();
+    const cursosFiltrados = cursos.filter((curso) => {
+        return curso.nombre.toLowerCase().includes(textoBusqueda);
+    });
+
+    mostrarCursos(cursosFiltrados);
+});
+
+//se ejecuta el altacurso cuando se envía el formulario
+altaCursoForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (!altaCursoForm.checkValidity()) {
+        altaCursoForm.reportValidity();
+        return;
+    }
+
+    const nuevoCurso = {
+        identificador: identificadorCurso.value.trim(),
+        nombre: nombreCurso.value.trim(),
+        categoria: categoriaCurso.value.trim(),
+        duracion: `${duracionCurso.value} horas`,
+        plazasDisponibles: Number(plazasCurso.value)
+    };
+
+    if (!nuevoCurso.identificador || !nuevoCurso.nombre || !nuevoCurso.categoria) {
+        return;
+    }
+
+    cursos.push(nuevoCurso);
+    mostrarCursos();
+    altaCursoForm.reset();
+});
 
 mostrarCursos();

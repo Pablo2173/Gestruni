@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +8,101 @@
     <link rel="stylesheet" href="../public/css/bootstrap.min.css">
     <link rel="stylesheet" href="../public/css/style.css">
 </head>
+
 <body>
     <main class="container py-3">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="./index.html">Inicio</a>
-            </li>
-            <li class="breadcrumb-item active">
-                <a href="./cursos.html" aria-current="page">Cursos</a>
-            </li>
-        </ol>
-    </nav>
-        <h2>Cursos</h2>
+        <!-- migas de pan -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="./index.html">Inicio</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="./cursos.html" aria-current="page">Cursos</a>
+                </li>
+            </ol>
+        </nav>
+        <!-- contenedor de los controles (título, añadir curso y buscador de cursos) -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <!-- título -->
+            <h2 class="mb-0 me-auto">Cursos</h2>
+            <!-- añdir curso -->
+            <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#alta-curso"
+                aria-controls="alta-curso" aria-expanded="false">
+                Añadir curso
+            </button>
+            <!-- buscador de cursos -->
+            <form id="busqueda-cursos-form" class="d-flex" role="search">
+                <label for="busqueda-cursos" class="visually-hidden">Buscar cursos</label>
+                <input class="form-control me-2" type="search" id="busqueda-cursos" placeholder="Buscar cursos"
+                    aria-label="Buscar cursos">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <!-- Formulario de alta de cursos. -->
+        <section id="alta-curso" class="collapse card mb-4" aria-labelledby="titulo-alta-curso">
+            <div class="card-body">
+                <h3 id="titulo-alta-curso" class="h4">Añadir curso</h3>
+                <form id="alta-curso-form" class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label for="curso-identificador" class="form-label">Identificador</label>
+                        <input type="text" class="form-control" id="curso-identificador" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="curso-nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="curso-nombre" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="curso-categoria" class="form-label">Categoría</label>
+                        <input type="text" class="form-control" id="curso-categoria" required>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label for="curso-duracion" class="form-label">Duración (horas)</label>
+                        <input type="number" class="form-control" id="curso-duracion" min="1" required>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label for="curso-plazas" class="form-label">Plazas disponibles</label>
+                        <input type="number" class="form-control" id="curso-plazas" min="0" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Añadir curso</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <!-- Los cursos se generan con JavaScript. -->
         <section id="catalogo-cursos" class="row g-4 mt-2" aria-live="polite">
             <!-- Las tarjetas se generan con JavaScript. -->
         </section>
+
+        <!-- Ventana de confirmación reutilizada para cualquier curso. Sujeto a cambios.-->
+        <div class="modal fade" id="confirmar-eliminacion" tabindex="-1" aria-labelledby="titulo-confirmar-eliminacion"
+            aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="titulo-confirmar-eliminacion" class="modal-title h5">
+                            Confirmar eliminación
+                        </h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="mensaje-confirmar-eliminacion" class="mb-0"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="mantener-curso" class="btn btn-light"
+                            data-bs-dismiss="modal">Mantener</button>
+                        <button type="button" id="borrar-curso" class="btn btn-danger">
+                            Borrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+    <script src="../public/js/bootstrap.bundle.min.js"></script>
     <script src="../public/js/cursos.js"></script>
 </body>
+
 </html>
