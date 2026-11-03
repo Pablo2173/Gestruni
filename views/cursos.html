@@ -27,17 +27,17 @@
             <!-- título -->
             <h2 class="mb-0 me-auto">Cursos</h2>
             <!-- añdir curso -->
-            <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#alta-curso"
+            <button id="boton-alta-curso" class="btn btn-success" type="button" data-bs-toggle="collapse"
+                data-bs-target="#alta-curso"
                 aria-controls="alta-curso" aria-expanded="false">
                 Añadir curso
             </button>
             <!-- buscador de cursos -->
-            <form id="busqueda-cursos-form" class="d-flex" role="search">
+            <div class="d-flex" role="search">
                 <label for="busqueda-cursos" class="visually-hidden">Buscar cursos</label>
                 <input class="form-control me-2" type="search" id="busqueda-cursos" placeholder="Buscar cursos"
                     aria-label="Buscar cursos">
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
-            </form>
+            </div>
         </div>
 
         <!-- Formulario de alta de cursos. -->

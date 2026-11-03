@@ -3,21 +3,21 @@
 //array inicial de cursos
 const cursos = [
     {
-        identificador: 'ABD',
+        id: 'ABD',
         nombre: 'Ampliación de bases de datos',
         categoria: 'Bases de datos',
         duracion: '40 horas',
         plazasDisponibles: 60
     },
     {
-        identificador: 'AW',
+        id: 'AW',
         nombre: 'Aplicaciones web',
         categoria: 'Programación web',
         duracion: '30 horas',
         plazasDisponibles: 60
     },
     {
-        identificador: 'IS-1',
+        id: 'IS-1',
         nombre: 'Ingeniería del software 1',
         categoria: 'Modelado de software',
         duracion: '45 horas',
@@ -37,13 +37,22 @@ const duracionCurso = document.querySelector('#curso-duracion');
 const plazasCurso = document.querySelector('#curso-plazas');
 
 //localiza los elementos del buscador de cursos
-const busquedaCursosForm = document.querySelector('#busqueda-cursos-form');
 const busquedaCursos = document.querySelector('#busqueda-cursos');
+const botonAltaCurso = document.querySelector('#boton-alta-curso');
+const altaCurso = document.querySelector('#alta-curso');
 const modalConfirmacion = document.querySelector('#confirmar-eliminacion');
 const mensajeConfirmacion = document.querySelector('#mensaje-confirmar-eliminacion');
 const borrarCurso = document.querySelector('#borrar-curso');
 const modalEliminacion = new bootstrap.Modal(modalConfirmacion);
-let cursoPendienteEliminar;
+let cursoPendienteEliminarId;
+
+altaCurso.addEventListener('shown.bs.collapse', () => {
+    botonAltaCurso.classList.replace('btn-success', 'btn-secondary');
+});
+
+altaCurso.addEventListener('hidden.bs.collapse', () => {
+    botonAltaCurso.classList.replace('btn-secondary', 'btn-success');
+});
 
 //función reutilizable para crear una línea de información de un curso (Categoría, Programación web)
 //crea un nuevo elemento en memoria (Categoría en negrita <strong> y Programación web en texto normal)
@@ -79,7 +88,7 @@ function crearTarjetaCurso(curso) {
     titulo.className = 'card-title h5';
     titulo.textContent = curso.nombre;
 
-    const identificador = crearDatoCurso('Identificador', curso.identificador);
+    const identificador = crearDatoCurso('Identificador', curso.id);
     const categoria = crearDatoCurso('Categoría', curso.categoria);
     const duracion = crearDatoCurso('Duración', curso.duracion);
     const plazas = crearDatoCurso('Plazas disponibles', curso.plazasDisponibles);
@@ -89,7 +98,7 @@ function crearTarjetaCurso(curso) {
     botonEliminar.type = 'button';
     botonEliminar.textContent = 'Eliminar';
     botonEliminar.addEventListener('click', () => {
-        cursoPendienteEliminar = curso;
+        cursoPendienteEliminarId = curso.id;
         mensajeConfirmacion.textContent =
             `¿Estás seguro de eliminar el curso ${curso.nombre}?`;
         modalEliminacion.show();
@@ -121,24 +130,36 @@ function mostrarCursos(cursosAMostrar = cursos) {
     });
 }
 
-//borra del array el curso confirmado y vuelve a mostrar el catálogo
-borrarCurso.addEventListener('click', () => {
-    const posicionCurso = cursos.indexOf(cursoPendienteEliminar);
-    cursos.splice(posicionCurso, 1);
-    modalEliminacion.hide();
-    mostrarCursos();
-});
-
-//filtra los cursos por nombre cuando se envía el formulario de búsqueda
-busquedaCursosForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
+function mostrarCursosFiltrados() {
     const textoBusqueda = busquedaCursos.value.trim().toLowerCase();
     const cursosFiltrados = cursos.filter((curso) => {
-        return curso.nombre.toLowerCase().includes(textoBusqueda);
+        return curso.nombre.toLowerCase().includes(textoBusqueda)
+            || curso.categoria.toLowerCase().includes(textoBusqueda)
+            || curso.id.toLowerCase().includes(textoBusqueda);
     });
 
     mostrarCursos(cursosFiltrados);
+}
+
+/*
+    Busca dentro del array el curso cuyo id coincide con el que se guardó al pulsar Eliminar
+    Si lo encuentra lo elimina y actualiza la lista mostrada en el DOM, si no lo encuentra no hace nada
+*/
+borrarCurso.addEventListener('click', () => {
+    const posicionCurso = cursos.findIndex((curso) => curso.id === cursoPendienteEliminarId);
+
+    if (posicionCurso === -1) {
+        return;
+    }
+
+    cursos.splice(posicionCurso, 1);
+    modalEliminacion.hide();
+    mostrarCursosFiltrados();
+});
+
+//filtra los cursos por nombre cada vez que cambia el texto de búsqueda
+busquedaCursos.addEventListener('input', () => {
+    mostrarCursosFiltrados();
 });
 
 //se ejecuta el altacurso cuando se envía el formulario
@@ -151,14 +172,14 @@ altaCursoForm.addEventListener('submit', (event) => {
     }
 
     const nuevoCurso = {
-        identificador: identificadorCurso.value.trim(),
+        id: identificadorCurso.value.trim(),
         nombre: nombreCurso.value.trim(),
         categoria: categoriaCurso.value.trim(),
         duracion: `${duracionCurso.value} horas`,
         plazasDisponibles: Number(plazasCurso.value)
     };
 
-    if (!nuevoCurso.identificador || !nuevoCurso.nombre || !nuevoCurso.categoria) {
+    if (!nuevoCurso.id || !nuevoCurso.nombre || !nuevoCurso.categoria) {
         return;
     }
 
