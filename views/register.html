@@ -33,13 +33,13 @@
                         required>
 
                     <!-- invalid-feedback -> mensaje de error que se muestra cuando la validación falla -->
-                    <div class="invalid-feedback">Escribe tu nombre (al menos 2 caracteres).</div>
+                    <div class="invalid-feedback" id="nombre-error">Escribe tu nombre (al menos 2 caracteres).</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="correo" class="form-label">Correo electrónico</label>
                     <input type="email" class="form-control" id="correo" name="correo" autocomplete="email" required>
-                    <div class="invalid-feedback">Introduce un correo electrónico válido.</div>
+                    <div class="invalid-feedback" id="correo-error">Introduce un correo electrónico válido.</div>
                 </div>
 
                 <div class="mb-3">
@@ -47,14 +47,14 @@
                     <input type="password" class="form-control" id="contrasena" name="contrasena"
                         autocomplete="new-password" minlength="8" required>
                     <div class="form-text">Debe tener al menos 8 caracteres.</div>
-                    <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
+                    <div class="invalid-feedback" id="contrasena-error">La contraseña debe tener al menos 8 caracteres.</div>
                 </div>
 
                 <div class="mb-4">
                     <label for="confirmacion-contrasena" class="form-label">Confirmación de contraseña</label>
                     <input type="password" class="form-control" id="confirmacion-contrasena"
                         name="confirmacion-contrasena" autocomplete="new-password" minlength="8" required>
-                    <div class="invalid-feedback">Las contraseñas deben coincidir.</div>
+                    <div class="invalid-feedback" id="confirmacion-contrasena-error">Las contraseñas deben coincidir.</div>
                 </div>
 
                 <button type="submit" class="btn btn-success">Registrarme</button>
@@ -64,7 +64,7 @@
     </main>
 
     <!-- Incluye el script de validación de registro -->
-    <script src="../public/js/registro.js"></script>
+    <script src="../public/js/register.js"></script>
 </body>
 
 </html>
