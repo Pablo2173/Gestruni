@@ -1,0 +1,29 @@
+{
+  "name": "gestruni",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "setup": "node loadDB.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pablo2173/Gestruni.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Pablo2173/Gestruni/issues"
+  },
+  "homepage": "https://github.com/Pablo2173/Gestruni#readme",
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
