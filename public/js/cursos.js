@@ -1,34 +1,11 @@
 'use strict';
 
-//array inicial de cursos
-const cursos = [
-    {
-        id: 'ABD',
-        nombre: 'Ampliación de bases de datos',
-        categoria: 'Bases de datos',
-        duracion: '40 horas',
-        plazasDisponibles: 60
-    },
-    {
-        id: 'AW',
-        nombre: 'Aplicaciones web',
-        categoria: 'Programación web',
-        duracion: '30 horas',
-        plazasDisponibles: 60
-    },
-    {
-        id: 'IS-1',
-        nombre: 'Ingeniería del software 1',
-        categoria: 'Modelado de software',
-        duracion: '45 horas',
-        plazasDisponibles: 60
-    }
-];
+let cursos = [];
 
-//localiza el contenedor html donde se muestran los cursos
+// Localiza el contenedor HTML donde se muestran los cursos
 const catalogoCursos = document.querySelector('#catalogo-cursos');
 
-//localiza los elementos del formulario de alta de cursos
+// Localiza los elementos del formulario de alta de cursos
 const altaCursoForm = document.querySelector('#alta-curso-form');
 const identificadorCurso = document.querySelector('#curso-identificador');
 const nombreCurso = document.querySelector('#curso-nombre');
@@ -36,26 +13,27 @@ const categoriaCurso = document.querySelector('#curso-categoria');
 const duracionCurso = document.querySelector('#curso-duracion');
 const plazasCurso = document.querySelector('#curso-plazas');
 
-//localiza los elementos del buscador de cursos
+// Localiza los elementos del buscador de cursos y modales
 const busquedaCursos = document.querySelector('#busqueda-cursos');
 const botonAltaCurso = document.querySelector('#boton-alta-curso');
 const altaCurso = document.querySelector('#alta-curso');
 const modalConfirmacion = document.querySelector('#confirmar-eliminacion');
 const mensajeConfirmacion = document.querySelector('#mensaje-confirmar-eliminacion');
 const borrarCurso = document.querySelector('#borrar-curso');
-const modalEliminacion = new bootstrap.Modal(modalConfirmacion);
+const modalEliminacion = modalConfirmacion ? new bootstrap.Modal(modalConfirmacion) : null;
 let cursoPendienteEliminarId;
 
-altaCurso.addEventListener('shown.bs.collapse', () => {
-    botonAltaCurso.classList.replace('btn-success', 'btn-secondary');
-});
+if (altaCurso && botonAltaCurso) {
+    altaCurso.addEventListener('shown.bs.collapse', () => {
+        botonAltaCurso.classList.replace('btn-success', 'btn-secondary');
+    });
 
-altaCurso.addEventListener('hidden.bs.collapse', () => {
-    botonAltaCurso.classList.replace('btn-secondary', 'btn-success');
-});
+    altaCurso.addEventListener('hidden.bs.collapse', () => {
+        botonAltaCurso.classList.replace('btn-secondary', 'btn-success');
+    });
+}
 
-//función reutilizable para crear una línea de información de un curso (Categoría, Programación web)
-//crea un nuevo elemento en memoria (Categoría en negrita <strong> y Programación web en texto normal)
+// Función reutilizable para crear una línea de información de un curso sin innerHTML
 function crearDatoCurso(etiqueta, valor) {
     const dato = document.createElement('p');
     dato.className = 'mb-2';
@@ -63,18 +41,12 @@ function crearDatoCurso(etiqueta, valor) {
     const nombreDato = document.createElement('strong');
     nombreDato.textContent = `${etiqueta}: `;
 
-    dato.append(nombreDato, document.createTextNode(valor));
+    dato.append(nombreDato, document.createTextNode(valor ?? 'No disponible'));
     return dato;
 }
 
-//establece las dimensiones de la tarjeta y añade la información del curso usando la función anterior
+// Crea la tarjeta de cada curso con los campos procedentes de MariaDB
 function crearTarjetaCurso(curso) {
-    /*
-        Diseño responsive de las tarjetas usando clases de Bootstrap:
-        col-12 -> ocupa todo el ancho en móvil (1 tarjeta por fila)
-        col-md-6 -> ocupa la mitad del ancho en pantallas medianas (2 tarjetas por fila)
-        col-xl-4 -> ocupa un tercio del ancho en pantallas grandes (3 tarjetas por fila)
-    */
     const columna = document.createElement('div');
     columna.className = 'col-12 col-md-6 col-xl-4';
 
@@ -88,23 +60,34 @@ function crearTarjetaCurso(curso) {
     titulo.className = 'card-title h5';
     titulo.textContent = curso.nombre;
 
-    const identificador = crearDatoCurso('Identificador', curso.id);
-    const categoria = crearDatoCurso('Categoría', curso.categoria);
-    const duracion = crearDatoCurso('Duración', curso.duracion);
-    const plazas = crearDatoCurso('Plazas disponibles', curso.plazasDisponibles);
+    const descripcion = document.createElement('p');
+    descripcion.className = 'card-text text-muted';
+    descripcion.textContent = curso.descripcion || '';
+
+    const docente = crearDatoCurso('Docente', curso.nombre_docente);
+    const aula = crearDatoCurso('Aula', curso.nombre_aula);
+    const horario = crearDatoCurso('Horario', curso.horario);
+    const plazas = crearDatoCurso(
+        'Plazas disponibles',
+        `${curso.plazas_disponibles} / ${curso.plazas}`
+    );
 
     const botonEliminar = document.createElement('button');
     botonEliminar.className = 'btn btn-danger align-self-start mt-auto';
     botonEliminar.type = 'button';
     botonEliminar.textContent = 'Eliminar';
     botonEliminar.addEventListener('click', () => {
-        cursoPendienteEliminarId = curso.id;
-        mensajeConfirmacion.textContent =
-            `¿Estás seguro de eliminar el curso ${curso.nombre}?`;
-        modalEliminacion.show();
+        cursoPendienteEliminarId = curso.id_curso;
+        if (mensajeConfirmacion) {
+            mensajeConfirmacion.textContent =
+                `¿Estás seguro de eliminar el curso ${curso.nombre}?`;
+        }
+        if (modalEliminacion) {
+            modalEliminacion.show();
+        }
     });
 
-    cuerpoTarjeta.append(titulo, identificador, categoria, duracion, plazas, botonEliminar);
+    cuerpoTarjeta.append(titulo, descripcion, docente, aula, horario, plazas, botonEliminar);
     tarjeta.append(cuerpoTarjeta);
     columna.append(tarjeta);
 
@@ -112,10 +95,8 @@ function crearTarjetaCurso(curso) {
 }
 
 function mostrarCursos(cursosAMostrar = cursos) {
-    //vacía el contenedor de cursos antes de mostrar los cursos actuales
     catalogoCursos.replaceChildren();
 
-    //si no hay cursos, muestra un mensaje en lugar de las tarjetas
     if (cursosAMostrar.length === 0) {
         const mensaje = document.createElement('p');
         mensaje.className = 'col-12';
@@ -124,68 +105,101 @@ function mostrarCursos(cursosAMostrar = cursos) {
         return;
     }
 
-    //recorre el array de cursos y crea una tarjeta para cada curso, añadiéndola al contenedor
     cursosAMostrar.forEach((curso) => {
         catalogoCursos.append(crearTarjetaCurso(curso));
     });
 }
 
+function mostrarError(mensajeError) {
+    catalogoCursos.replaceChildren();
+
+    const alerta = document.createElement('div');
+    alerta.className = 'alert alert-danger col-12';
+    alerta.setAttribute('role', 'alert');
+    alerta.textContent = mensajeError;
+    catalogoCursos.append(alerta);
+}
+
 function mostrarCursosFiltrados() {
-    const textoBusqueda = busquedaCursos.value.trim().toLowerCase();
+    const textoBusqueda = busquedaCursos ? busquedaCursos.value.trim().toLowerCase() : '';
     const cursosFiltrados = cursos.filter((curso) => {
-        return curso.nombre.toLowerCase().includes(textoBusqueda)
-            || curso.categoria.toLowerCase().includes(textoBusqueda)
-            || curso.id.toLowerCase().includes(textoBusqueda);
+        return (curso.nombre && curso.nombre.toLowerCase().includes(textoBusqueda))
+            || (curso.nombre_docente && curso.nombre_docente.toLowerCase().includes(textoBusqueda))
+            || (curso.nombre_aula && curso.nombre_aula.toLowerCase().includes(textoBusqueda))
+            || String(curso.id_curso).toLowerCase().includes(textoBusqueda);
     });
 
     mostrarCursos(cursosFiltrados);
 }
 
-/*
-    Busca dentro del array el curso cuyo id coincide con el que se guardó al pulsar Eliminar
-    Si lo encuentra lo elimina y actualiza la lista mostrada en el DOM, si no lo encuentra no hace nada
-*/
-borrarCurso.addEventListener('click', () => {
-    const posicionCurso = cursos.findIndex((curso) => curso.id === cursoPendienteEliminarId);
+// Carga los cursos desde el endpoint REST conectado a MariaDB
+function cargarCursos() {
+    fetch('/api/cursos')
+        .then((r) => {
+            if (!r.ok) {
+                throw new Error('Error HTTP');
+            }
+            return r.json();
+        })
+        .then((datos) => {
+            cursos = datos;
+            mostrarCursos(cursos);
+        })
+        .catch(() => {
+            mostrarError('No se pudo cargar el catálogo');
+        });
+}
 
-    if (posicionCurso === -1) {
-        return;
-    }
+if (borrarCurso) {
+    borrarCurso.addEventListener('click', () => {
+        const posicionCurso = cursos.findIndex((curso) => curso.id_curso === cursoPendienteEliminarId);
 
-    cursos.splice(posicionCurso, 1);
-    modalEliminacion.hide();
-    mostrarCursosFiltrados();
-});
+        if (posicionCurso === -1) {
+            return;
+        }
 
-//filtra los cursos por nombre cada vez que cambia el texto de búsqueda
-busquedaCursos.addEventListener('input', () => {
-    mostrarCursosFiltrados();
-});
+        cursos.splice(posicionCurso, 1);
+        if (modalEliminacion) {
+            modalEliminacion.hide();
+        }
+        mostrarCursosFiltrados();
+    });
+}
 
-//se ejecuta el altacurso cuando se envía el formulario
-altaCursoForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+if (busquedaCursos) {
+    busquedaCursos.addEventListener('input', () => {
+        mostrarCursosFiltrados();
+    });
+}
 
-    if (!altaCursoForm.checkValidity()) {
-        altaCursoForm.reportValidity();
-        return;
-    }
+if (altaCursoForm) {
+    altaCursoForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-    const nuevoCurso = {
-        id: identificadorCurso.value.trim(),
-        nombre: nombreCurso.value.trim(),
-        categoria: categoriaCurso.value.trim(),
-        duracion: `${duracionCurso.value} horas`,
-        plazasDisponibles: Number(plazasCurso.value)
-    };
+        if (!altaCursoForm.checkValidity()) {
+            altaCursoForm.reportValidity();
+            return;
+        }
 
-    if (!nuevoCurso.id || !nuevoCurso.nombre || !nuevoCurso.categoria) {
-        return;
-    }
+        const nuevoCurso = {
+            id_curso: identificadorCurso.value.trim(),
+            nombre: nombreCurso.value.trim(),
+            descripcion: categoriaCurso.value.trim(),
+            nombre_docente: 'Pendiente de asignar',
+            nombre_aula: 'Pendiente de asignar',
+            horario: `${duracionCurso.value} horas`,
+            plazas: Number(plazasCurso.value),
+            plazas_disponibles: Number(plazasCurso.value)
+        };
 
-    cursos.push(nuevoCurso);
-    mostrarCursos();
-    altaCursoForm.reset();
-});
+        if (!nuevoCurso.id_curso || !nuevoCurso.nombre) {
+            return;
+        }
 
-mostrarCursos();
+        cursos.push(nuevoCurso);
+        mostrarCursos();
+        altaCursoForm.reset();
+    });
+}
+
+cargarCursos();
