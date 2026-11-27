@@ -1,13 +1,50 @@
+:root {
+    --verde: #344130;
+    --verde-claro: #4b5d45;
+    --beige: #d3c6b0;
+    --gris-claro: #d9d9d9;
+    --gris-barra: #adadad;
+    --gris-tarjeta: #898989;
+    --texto: #1f2a1c;
+}
 
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    padding: 20px;
+    background-color: var(--beige);
 }
+
 h1 {
     color: #2e7d32;
 }
+
+.navbar .navbar-brand {
+    color: #2e7d32;
+}
+
 a {
     text-decoration: none;
     color: #1b5e20;
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0d6efd !important;
+}
+
+/* Hace visible el elemento activo al navegar con el teclado. */
+:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 3px;
+}
+
+.registro-card {
+    max-width: 32rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 10%);
 }
