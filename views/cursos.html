@@ -77,29 +77,58 @@
         <section id="alta-curso" class="collapse card mb-4" aria-labelledby="titulo-alta-curso">
             <div class="card-body">
                 <h3 id="titulo-alta-curso" class="h4">Añadir curso</h3>
-                <form id="alta-curso-form" class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <label for="curso-identificador" class="form-label">Identificador</label>
-                        <input type="text" class="form-control" id="curso-identificador" required>
+                <form id="alta-curso-form" class="row g-3" novalidate>
+                    <div class="col-md-6">
+                        <label for="curso-nombre" class="form-label">Nombre del curso *</label>
+                        <input type="text" class="form-control" id="curso-nombre" maxlength="100" required>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <label for="curso-nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="curso-nombre" required>
+
+                    <div class="col-md-3">
+                        <label for="curso-docente" class="form-label">Docente *</label>
+                        <select class="form-select" id="curso-docente" required>
+                            <option value="">Selecciona un docente...</option>
+                        </select>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <label for="curso-categoria" class="form-label">Categoría</label>
-                        <input type="text" class="form-control" id="curso-categoria" required>
+
+                    <div class="col-md-3">
+                        <label for="curso-aula" class="form-label">Aula *</label>
+                        <select class="form-select" id="curso-aula" required>
+                            <option value="">Selecciona un aula...</option>
+                        </select>
                     </div>
-                    <div class="col-12 col-md-3">
-                        <label for="curso-duracion" class="form-label">Duración (horas)</label>
-                        <input type="number" class="form-control" id="curso-duracion" min="1" required>
-                    </div>
-                    <div class="col-12 col-md-3">
-                        <label for="curso-plazas" class="form-label">Plazas disponibles</label>
-                        <input type="number" class="form-control" id="curso-plazas" min="0" required>
-                    </div>
+
                     <div class="col-12">
-                        <button type="submit" class="btn btn-success">Añadir curso</button>
+                        <label for="curso-descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="curso-descripcion" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="curso-fecha-inicio" class="form-label">Fecha de inicio *</label>
+                        <input type="date" class="form-control" id="curso-fecha-inicio" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="curso-fecha-fin" class="form-label">Fecha de fin *</label>
+                        <input type="date" class="form-control" id="curso-fecha-fin" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="curso-horario" class="form-label">Horario</label>
+                        <input type="text" class="form-control" id="curso-horario" placeholder="Ej: Lunes y miércoles 17:00-19:00" maxlength="100">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="curso-plazas" class="form-label">Plazas *</label>
+                        <input type="number" class="form-control" id="curso-plazas" min="1" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="curso-imagen" class="form-label">Ruta de imagen (opcional)</label>
+                        <input type="text" class="form-control" id="curso-imagen" placeholder="img/cursos/curso01.png" maxlength="255">
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Guardar curso</button>
                     </div>
                 </form>
             </div>

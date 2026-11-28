@@ -2,18 +2,19 @@
 
 let cursos = [];
 
-// Localiza el contenedor HTML donde se muestran los cursos
 const catalogoCursos = document.querySelector('#catalogo-cursos');
-
-// Localiza los elementos del formulario de alta de cursos
 const altaCursoForm = document.querySelector('#alta-curso-form');
-const identificadorCurso = document.querySelector('#curso-identificador');
-const nombreCurso = document.querySelector('#curso-nombre');
-const categoriaCurso = document.querySelector('#curso-categoria');
-const duracionCurso = document.querySelector('#curso-duracion');
-const plazasCurso = document.querySelector('#curso-plazas');
 
-// Localiza los elementos del buscador de cursos y modales
+const nombreCurso = document.querySelector('#curso-nombre');
+const docenteCurso = document.querySelector('#curso-docente');
+const aulaCurso = document.querySelector('#curso-aula');
+const descripcionCurso = document.querySelector('#curso-descripcion');
+const fechaInicioCurso = document.querySelector('#curso-fecha-inicio');
+const fechaFinCurso = document.querySelector('#curso-fecha-fin');
+const horarioCurso = document.querySelector('#curso-horario');
+const plazasCurso = document.querySelector('#curso-plazas');
+const imagenCurso = document.querySelector('#curso-imagen');
+
 const busquedaCursos = document.querySelector('#busqueda-cursos');
 const botonAltaCurso = document.querySelector('#boton-alta-curso');
 const altaCurso = document.querySelector('#alta-curso');
@@ -33,7 +34,6 @@ if (altaCurso && botonAltaCurso) {
     });
 }
 
-// Función reutilizable para crear una línea de información de un curso sin innerHTML
 function crearDatoCurso(etiqueta, valor) {
     const dato = document.createElement('p');
     dato.className = 'mb-2';
@@ -45,13 +45,40 @@ function crearDatoCurso(etiqueta, valor) {
     return dato;
 }
 
-// Crea la tarjeta de cada curso con los campos procedentes de MariaDB
+function formatearFecha(fechaISO) {
+    if (!fechaISO) return '';
+    return new Date(fechaISO).toLocaleDateString('es-ES');
+}
+
+function construirRutaImagen(rutaRelativa) {
+    if (!rutaRelativa) {
+        return '/public/img/cursos/curso01.png';
+    }
+    if (rutaRelativa.startsWith('/public/') || rutaRelativa.startsWith('http')) {
+        return rutaRelativa;
+    }
+    const rutaLimpia = rutaRelativa.replace(/^\/+/, '');
+    return `/public/${rutaLimpia}`;
+}
+
 function crearTarjetaCurso(curso) {
     const columna = document.createElement('div');
     columna.className = 'col-12 col-md-6 col-xl-4';
 
     const tarjeta = document.createElement('article');
-    tarjeta.className = 'card h-100 shadow-sm';
+    tarjeta.className = 'card h-100 shadow-sm overflow-hidden';
+
+    if (curso.imagen) {
+        const img = document.createElement('img');
+        img.className = 'card-img-top object-fit-cover';
+        img.style.height = '180px';
+        img.src = construirRutaImagen(curso.imagen);
+        img.alt = `Imagen del curso ${curso.nombre}`;
+        img.addEventListener('error', () => {
+            img.remove();
+        });
+        tarjeta.append(img);
+    }
 
     const cuerpoTarjeta = document.createElement('div');
     cuerpoTarjeta.className = 'card-body d-flex flex-column';
@@ -66,7 +93,11 @@ function crearTarjetaCurso(curso) {
 
     const docente = crearDatoCurso('Docente', curso.nombre_docente);
     const aula = crearDatoCurso('Aula', curso.nombre_aula);
-    const horario = crearDatoCurso('Horario', curso.horario);
+    const fechas = crearDatoCurso(
+        'Fechas',
+        `${formatearFecha(curso.fecha_inicio)} - ${formatearFecha(curso.fecha_fin)}`
+    );
+    const horario = crearDatoCurso('Horario', curso.horario || 'Por determinar');
     const plazas = crearDatoCurso(
         'Plazas disponibles',
         `${curso.plazas_disponibles} / ${curso.plazas}`
@@ -80,14 +111,14 @@ function crearTarjetaCurso(curso) {
         cursoPendienteEliminarId = curso.id_curso;
         if (mensajeConfirmacion) {
             mensajeConfirmacion.textContent =
-                `¿Estás seguro de eliminar el curso ${curso.nombre}?`;
+                `¿Estás seguro de desactivar el curso ${curso.nombre}?`;
         }
         if (modalEliminacion) {
             modalEliminacion.show();
         }
     });
 
-    cuerpoTarjeta.append(titulo, descripcion, docente, aula, horario, plazas, botonEliminar);
+    cuerpoTarjeta.append(titulo, descripcion, docente, aula, fechas, horario, plazas, botonEliminar);
     tarjeta.append(cuerpoTarjeta);
     columna.append(tarjeta);
 
@@ -132,7 +163,6 @@ function mostrarCursosFiltrados() {
     mostrarCursos(cursosFiltrados);
 }
 
-// Carga los cursos desde el endpoint REST conectado a MariaDB
 function cargarCursos() {
     fetch('/api/cursos')
         .then((r) => {
@@ -142,27 +172,69 @@ function cargarCursos() {
             return r.json();
         })
         .then((datos) => {
-            cursos = datos;
-            mostrarCursos(cursos);
+            cursos = datos.filter((curso) => curso.estado === 'activo');
+            mostrarCursosFiltrados();
         })
         .catch(() => {
             mostrarError('No se pudo cargar el catálogo');
         });
 }
 
+function cargarOpcionesFormulario() {
+    if (!docenteCurso || !aulaCurso) return;
+
+    fetch('/api/cursos/opciones')
+        .then((r) => {
+            if (!r.ok) throw new Error('Error al cargar opciones');
+            return r.json();
+        })
+        .then(({ docentes, aulas }) => {
+            docentes.forEach((docente) => {
+                const option = document.createElement('option');
+                option.value = docente.id_docente;
+                option.textContent = `${docente.nombre} (${docente.especialidad})`;
+                docenteCurso.append(option);
+            });
+
+            aulas.forEach((aula) => {
+                const option = document.createElement('option');
+                option.value = aula.id_aula;
+                option.textContent = `${aula.nombre} - ${aula.edificio} (Cap: ${aula.capacidad})`;
+                aulaCurso.append(option);
+            });
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+}
+
 if (borrarCurso) {
     borrarCurso.addEventListener('click', () => {
-        const posicionCurso = cursos.findIndex((curso) => curso.id_curso === cursoPendienteEliminarId);
+        if (!cursoPendienteEliminarId) return;
 
-        if (posicionCurso === -1) {
-            return;
-        }
-
-        cursos.splice(posicionCurso, 1);
-        if (modalEliminacion) {
-            modalEliminacion.hide();
-        }
-        mostrarCursosFiltrados();
+        fetch(`/api/cursos/${cursoPendienteEliminarId}`, {
+            method: 'DELETE'
+        })
+            .then(async (r) => {
+                const data = await r.json();
+                if (!r.ok) {
+                    throw new Error(data.error || 'Error al desactivar el curso');
+                }
+                return data;
+            })
+            .then(() => {
+                cursoPendienteEliminarId = null;
+                if (modalEliminacion) {
+                    modalEliminacion.hide();
+                }
+                cargarCursos();
+            })
+            .catch((err) => {
+                if (modalEliminacion) {
+                    modalEliminacion.hide();
+                }
+                alert(err.message);
+            });
     });
 }
 
@@ -182,24 +254,38 @@ if (altaCursoForm) {
         }
 
         const nuevoCurso = {
-            id_curso: identificadorCurso.value.trim(),
             nombre: nombreCurso.value.trim(),
-            descripcion: categoriaCurso.value.trim(),
-            nombre_docente: 'Pendiente de asignar',
-            nombre_aula: 'Pendiente de asignar',
-            horario: `${duracionCurso.value} horas`,
+            id_docente: Number(docenteCurso.value),
+            id_aula: Number(aulaCurso.value),
+            descripcion: descripcionCurso.value.trim(),
+            fecha_inicio: fechaInicioCurso.value,
+            fecha_fin: fechaFinCurso.value,
+            horario: horarioCurso.value.trim(),
             plazas: Number(plazasCurso.value),
-            plazas_disponibles: Number(plazasCurso.value)
+            imagen: imagenCurso.value.trim()
         };
 
-        if (!nuevoCurso.id_curso || !nuevoCurso.nombre) {
-            return;
-        }
-
-        cursos.push(nuevoCurso);
-        mostrarCursos();
-        altaCursoForm.reset();
+        fetch('/api/cursos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nuevoCurso)
+        })
+            .then(async (r) => {
+                const data = await r.json();
+                if (!r.ok) {
+                    throw new Error(data.error || 'Error al crear el curso');
+                }
+                return data;
+            })
+            .then(() => {
+                altaCursoForm.reset();
+                cargarCursos();
+            })
+            .catch((err) => {
+                alert(err.message);
+            });
     });
 }
 
+cargarOpcionesFormulario();
 cargarCursos();
