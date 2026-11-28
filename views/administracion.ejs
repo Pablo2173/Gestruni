@@ -1,0 +1,86 @@
+<%- include('partials/header', { title: 'Administración', actual: 'administracion' }) %>
+
+<main class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/index.html">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Administración</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+        <h2 class="mb-0"><i class="bi bi-shield-lock text-success me-2"></i>Panel de Administración</h2>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="/cursos.html" class="btn border-success btn-sm">Gestionar cursos</a>
+            <a href="/matriculas.html" class="btn border-secondary btn-sm">Ver todas las matrículas</a>
+        </div>
+    </div>
+
+    <div id="alerta-admin" class="d-none" role="alert" aria-live="polite"></div>
+
+    <section class="row g-3 mb-4" aria-label="Estadísticas del sistema">
+        <div class="col-6 col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Cursos activos</p>
+                    <p class="h2 mb-0 text-success" id="stat-cursos">-</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Usuarios activos</p>
+                    <p class="h2 mb-0 text-success" id="stat-usuarios">-</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Matrículas activas</p>
+                    <p class="h2 mb-0 text-success" id="stat-matriculas">-</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Docentes / Aulas</p>
+                    <p class="h2 mb-0 text-success" id="stat-recursos">-</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section aria-labelledby="titulo-gestion-usuarios">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <h3 id="titulo-gestion-usuarios" class="h4 mb-0">Usuarios registrados</h3>
+            <div class="d-flex" role="search">
+                <label for="busqueda-usuarios" class="visually-hidden">Buscar usuarios</label>
+                <input type="search" id="busqueda-usuarios" class="form-control"
+                    placeholder="Filtrar por nombre, correo o rol...">
+            </div>
+        </div>
+
+        <div class="table-responsive card p-2">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Correo electrónico</th>
+                        <th scope="col">Fecha registro</th>
+                        <th scope="col">Matrículas activas</th>
+                        <th scope="col">Rol</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-usuarios"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<%- include('partials/footer', { scripts: ['administracion'] }) %>

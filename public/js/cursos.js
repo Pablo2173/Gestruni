@@ -1,9 +1,12 @@
 'use strict';
 
 let cursos = [];
+let soloPlazasLibres = false;
+let cursoPendienteEliminarId = null;
 
 const catalogoCursos = document.querySelector('#catalogo-cursos');
 const altaCursoForm = document.querySelector('#alta-curso-form');
+const altaCursoMensaje = document.querySelector('#alta-curso-mensaje');
 
 const nombreCurso = document.querySelector('#curso-nombre');
 const docenteCurso = document.querySelector('#curso-docente');
@@ -15,22 +18,30 @@ const horarioCurso = document.querySelector('#curso-horario');
 const plazasCurso = document.querySelector('#curso-plazas');
 const imagenCurso = document.querySelector('#curso-imagen');
 
-const busquedaCursos = document.querySelector('#busqueda-cursos');
-const botonAltaCurso = document.querySelector('#boton-alta-curso');
-const altaCurso = document.querySelector('#alta-curso');
-const modalConfirmacion = document.querySelector('#confirmar-eliminacion');
-const mensajeConfirmacion = document.querySelector('#mensaje-confirmar-eliminacion');
-const borrarCurso = document.querySelector('#borrar-curso');
-const modalEliminacion = modalConfirmacion ? new bootstrap.Modal(modalConfirmacion) : null;
-let cursoPendienteEliminarId;
+const busquedaCursosForm = document.querySelector('#busqueda-cursos');
+const campoBusqueda = document.querySelector('#campo-busqueda');
+const botonFiltrarPlazas = document.querySelector('#boton-filtrar-plazas');
+const botonRestablecerFiltros = document.querySelector('#boton-restablecer-filtros');
 
-if (altaCurso && botonAltaCurso) {
-    altaCurso.addEventListener('shown.bs.collapse', () => {
-        botonAltaCurso.classList.replace('btn-success', 'btn-secondary');
+const botonAltaCurso = document.querySelector('#boton-alta-curso');
+const panelAltaCurso = document.querySelector('#panel-alta-curso');
+
+const modalConfirmacion = document.querySelector('#confirmar-eliminar-modal');
+const mensajeConfirmacion = document.querySelector('#texto-modal-eliminar');
+const borrarCurso = document.querySelector('#confirmar-eliminar-boton');
+const modalEliminacion = modalConfirmacion ? new bootstrap.Modal(modalConfirmacion) : null;
+
+function esAdmin() {
+    return Boolean(window.usuarioActual && window.usuarioActual.rol === 'admin');
+}
+
+if (panelAltaCurso && botonAltaCurso) {
+    panelAltaCurso.addEventListener('shown.bs.collapse', () => {
+        botonAltaCurso.classList.replace('border-success', 'border-secondary');
     });
 
-    altaCurso.addEventListener('hidden.bs.collapse', () => {
-        botonAltaCurso.classList.replace('btn-secondary', 'btn-success');
+    panelAltaCurso.addEventListener('hidden.bs.collapse', () => {
+        botonAltaCurso.classList.replace('border-secondary', 'border-success');
     });
 }
 
@@ -66,12 +77,11 @@ function crearTarjetaCurso(curso) {
     columna.className = 'col-12 col-md-6 col-xl-4';
 
     const tarjeta = document.createElement('article');
-    tarjeta.className = 'card h-100 shadow-sm overflow-hidden';
+    tarjeta.className = 'card card-hover h-100 overflow-hidden';
 
     if (curso.imagen) {
         const img = document.createElement('img');
-        img.className = 'card-img-top object-fit-cover';
-        img.style.height = '180px';
+        img.className = 'card-img-top';
         img.src = construirRutaImagen(curso.imagen);
         img.alt = `Imagen del curso ${curso.nombre}`;
         img.addEventListener('error', () => {
@@ -103,22 +113,34 @@ function crearTarjetaCurso(curso) {
         `${curso.plazas_disponibles} / ${curso.plazas}`
     );
 
-    const botonEliminar = document.createElement('button');
-    botonEliminar.className = 'btn btn-danger align-self-start mt-auto';
-    botonEliminar.type = 'button';
-    botonEliminar.textContent = 'Eliminar';
-    botonEliminar.addEventListener('click', () => {
-        cursoPendienteEliminarId = curso.id_curso;
-        if (mensajeConfirmacion) {
-            mensajeConfirmacion.textContent =
-                `¿Estás seguro de desactivar el curso ${curso.nombre}?`;
-        }
-        if (modalEliminacion) {
-            modalEliminacion.show();
-        }
-    });
+    const contenedorBotones = document.createElement('div');
+    contenedorBotones.className = 'd-flex flex-wrap gap-2 mt-auto pt-2';
 
-    cuerpoTarjeta.append(titulo, descripcion, docente, aula, fechas, horario, plazas, botonEliminar);
+    const enlaceDetalle = document.createElement('a');
+    enlaceDetalle.className = 'btn border-success';
+    enlaceDetalle.href = `/detalles_cursos?id=${encodeURIComponent(curso.id_curso)}`;
+    enlaceDetalle.textContent = 'Ver detalle';
+    contenedorBotones.append(enlaceDetalle);
+
+    if (esAdmin()) {
+        const botonEliminar = document.createElement('button');
+        botonEliminar.className = 'btn border-danger';
+        botonEliminar.type = 'button';
+        botonEliminar.textContent = 'Desactivar';
+        botonEliminar.addEventListener('click', () => {
+            cursoPendienteEliminarId = curso.id_curso;
+            if (mensajeConfirmacion) {
+                mensajeConfirmacion.textContent =
+                    `¿Estás seguro de desactivar el curso "${curso.nombre}"?`;
+            }
+            if (modalEliminacion) {
+                modalEliminacion.show();
+            }
+        });
+        contenedorBotones.append(botonEliminar);
+    }
+
+    cuerpoTarjeta.append(titulo, descripcion, docente, aula, fechas, horario, plazas, contenedorBotones);
     tarjeta.append(cuerpoTarjeta);
     columna.append(tarjeta);
 
@@ -126,12 +148,13 @@ function crearTarjetaCurso(curso) {
 }
 
 function mostrarCursos(cursosAMostrar = cursos) {
+    if (!catalogoCursos) return;
     catalogoCursos.replaceChildren();
 
     if (cursosAMostrar.length === 0) {
         const mensaje = document.createElement('p');
-        mensaje.className = 'col-12';
-        mensaje.textContent = 'No hay cursos disponibles en este momento.';
+        mensaje.className = 'col-12 text-muted';
+        mensaje.textContent = 'No hay cursos disponibles con los filtros actuales.';
         catalogoCursos.append(mensaje);
         return;
     }
@@ -142,6 +165,7 @@ function mostrarCursos(cursosAMostrar = cursos) {
 }
 
 function mostrarError(mensajeError) {
+    if (!catalogoCursos) return;
     catalogoCursos.replaceChildren();
 
     const alerta = document.createElement('div');
@@ -152,12 +176,16 @@ function mostrarError(mensajeError) {
 }
 
 function mostrarCursosFiltrados() {
-    const textoBusqueda = busquedaCursos ? busquedaCursos.value.trim().toLowerCase() : '';
+    const textoBusqueda = campoBusqueda ? campoBusqueda.value.trim().toLowerCase() : '';
     const cursosFiltrados = cursos.filter((curso) => {
-        return (curso.nombre && curso.nombre.toLowerCase().includes(textoBusqueda))
+        const coincideTexto = (curso.nombre && curso.nombre.toLowerCase().includes(textoBusqueda))
             || (curso.nombre_docente && curso.nombre_docente.toLowerCase().includes(textoBusqueda))
             || (curso.nombre_aula && curso.nombre_aula.toLowerCase().includes(textoBusqueda))
-            || String(curso.id_curso).toLowerCase().includes(textoBusqueda);
+            || String(curso.id_curso).includes(textoBusqueda);
+
+        const coincidePlazas = !soloPlazasLibres || Number(curso.plazas_disponibles) > 0;
+
+        return coincideTexto && coincidePlazas;
     });
 
     mostrarCursos(cursosFiltrados);
@@ -176,12 +204,12 @@ function cargarCursos() {
             mostrarCursosFiltrados();
         })
         .catch(() => {
-            mostrarError('No se pudo cargar el catálogo');
+            mostrarError('No se pudo cargar el catálogo de cursos.');
         });
 }
 
 function cargarOpcionesFormulario() {
-    if (!docenteCurso || !aulaCurso) return;
+    if (!docenteCurso || !aulaCurso || !esAdmin()) return;
 
     fetch('/api/cursos/opciones')
         .then((r) => {
@@ -189,12 +217,24 @@ function cargarOpcionesFormulario() {
             return r.json();
         })
         .then(({ docentes, aulas }) => {
+            docenteCurso.replaceChildren();
+            const optDocDefault = document.createElement('option');
+            optDocDefault.value = '';
+            optDocDefault.textContent = 'Selecciona un docente...';
+            docenteCurso.append(optDocDefault);
+
             docentes.forEach((docente) => {
                 const option = document.createElement('option');
                 option.value = docente.id_docente;
                 option.textContent = `${docente.nombre} (${docente.especialidad})`;
                 docenteCurso.append(option);
             });
+
+            aulaCurso.replaceChildren();
+            const optAulaDefault = document.createElement('option');
+            optAulaDefault.value = '';
+            optAulaDefault.textContent = 'Selecciona un aula...';
+            aulaCurso.append(optAulaDefault);
 
             aulas.forEach((aula) => {
                 const option = document.createElement('option');
@@ -238,8 +278,33 @@ if (borrarCurso) {
     });
 }
 
-if (busquedaCursos) {
-    busquedaCursos.addEventListener('input', () => {
+if (busquedaCursosForm) {
+    busquedaCursosForm.addEventListener('submit', (e) => e.preventDefault());
+}
+
+if (campoBusqueda) {
+    campoBusqueda.addEventListener('input', mostrarCursosFiltrados);
+}
+
+if (botonFiltrarPlazas) {
+    botonFiltrarPlazas.addEventListener('click', () => {
+        soloPlazasLibres = !soloPlazasLibres;
+        botonFiltrarPlazas.classList.toggle('active', soloPlazasLibres);
+        botonFiltrarPlazas.textContent = soloPlazasLibres
+            ? 'Mostrando con plazas libres'
+            : 'Solo con plazas libres';
+        mostrarCursosFiltrados();
+    });
+}
+
+if (botonRestablecerFiltros) {
+    botonRestablecerFiltros.addEventListener('click', () => {
+        if (campoBusqueda) campoBusqueda.value = '';
+        soloPlazasLibres = false;
+        if (botonFiltrarPlazas) {
+            botonFiltrarPlazas.classList.remove('active');
+            botonFiltrarPlazas.textContent = 'Solo con plazas libres';
+        }
         mostrarCursosFiltrados();
     });
 }
@@ -279,13 +344,34 @@ if (altaCursoForm) {
             })
             .then(() => {
                 altaCursoForm.reset();
+                if (altaCursoMensaje) {
+                    altaCursoMensaje.className = 'mt-3 mb-0 alert alert-success';
+                    altaCursoMensaje.textContent = 'Curso creado correctamente.';
+                }
                 cargarCursos();
             })
             .catch((err) => {
-                alert(err.message);
+                if (altaCursoMensaje) {
+                    altaCursoMensaje.className = 'mt-3 mb-0 alert alert-danger';
+                    altaCursoMensaje.textContent = err.message;
+                }
             });
     });
 }
 
-cargarOpcionesFormulario();
-cargarCursos();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+            const data = await res.json();
+            window.usuarioActual = data.usuario;
+        } else {
+            window.usuarioActual = null;
+        }
+    } catch {
+        window.usuarioActual = null;
+    }
+
+    cargarOpcionesFormulario();
+    cargarCursos();
+});

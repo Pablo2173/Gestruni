@@ -1,0 +1,11 @@
+<%- include('partials/header', { title: 'Cerrar sesión', actual: 'logout' }) %>
+
+<main class="container py-5 d-flex justify-content-center align-items-center">
+    <section class="registro-card p-4 text-center w-100" aria-live="polite">
+        <h2 class="h4 mb-3">Cerrando sesión...</h2>
+        <p id="logout-mensaje" class="text-muted mb-3">Por favor, espera un instante.</p>
+        <a href="/index.html" class="btn border-secondary">Volver al inicio</a>
+    </section>
+</main>
+
+<%- include('partials/footer', { scripts: ['logout'] }) %>

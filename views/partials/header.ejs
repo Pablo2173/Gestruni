@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> · Gestruni</title>
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="/public/css/style.css">
+    <script>
+        (function () {
+            try {
+                const prefs = JSON.parse(localStorage.getItem('gestruni_accesibilidad') || '{}');
+                if (prefs.tema && prefs.tema !== 'light') {
+                    document.documentElement.setAttribute('data-theme', prefs.tema);
+                }
+                if (prefs.escala) {
+                    document.documentElement.style.fontSize = (parseFloat(prefs.escala) * 100) + '%';
+                }
+            } catch (e) {}
+        })();
+    </script>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-xl navbar-dark" id="custom-navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                    <i class="bi bi-mortarboard-fill fs-4"></i>
+                    <h1 class="mb-0 fs-4 fw-bold">GESTRUNI</h1>
+                </a>
+
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
+                    aria-label="Mostrar navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <!-- Enlaces principales a la izquierda -->
+                    <ul class="navbar-nav me-auto ms-xl-4">
+                        <li class="nav-item me-2">
+                            <a class="nav-link <%= actual === 'index' ? 'active-page' : '' %>" href="/">
+                                <i class="bi bi-house-door me-1"></i>Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link <%= (actual === 'cursos' || actual === 'detalles_cursos') ? 'active-page' : '' %>" href="/cursos">
+                                <i class="bi bi-book me-1"></i>Cursos
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link <%= actual === 'docentes' ? 'active-page' : '' %>" href="/docentes">
+                                <i class="bi bi-person-workspace me-1"></i>Docentes
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link <%= actual === 'aulas' ? 'active-page' : '' %>" href="/aulas">
+                                <i class="bi bi-building me-1"></i>Aulas
+                            </a>
+                        </li>
+                        <% if (usuario) { %>
+                            <li class="nav-item me-2">
+                                <a class="nav-link <%= actual === 'matriculas' ? 'active-page' : '' %>" href="/matriculas">
+                                    <i class="bi bi-journal-check me-1"></i><%= usuario.rol === 'admin' ? 'Matrículas' : 'Mis Matrículas' %>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+
+                    <!-- Acciones de usuario y accesibilidad a la derecha -->
+                    <ul class="navbar-nav ms-auto align-items-xl-center">
+                        <li class="nav-item me-2">
+                            <a class="nav-link <%= actual === 'accesibilidad' ? 'active-page' : '' %>" href="/accesibilidad" title="Opciones de accesibilidad">
+                                <i class="bi bi-universal-access me-1"></i>Accesibilidad
+                            </a>
+                        </li>
+
+                        <% if (!usuario) { %>
+                            <li class="nav-item me-2">
+                                <a class="nav-link <%= actual === 'register' ? 'active-page' : '' %>" href="/register">
+                                    <i class="bi bi-person-plus me-1"></i>Registro
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <%= actual === 'login' ? 'active-page' : '' %>" href="/login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+                                </a>
+                            </li>
+                        <% } else { %>
+                            <% if (usuario.rol === 'admin') { %>
+                                <li class="nav-item me-2">
+                                    <a class="nav-link <%= actual === 'administracion' ? 'active-page' : '' %>" href="/administracion">
+                                        <i class="bi bi-shield-lock me-1"></i>Administración
+                                    </a>
+                                </li>
+                            <% } %>
+                            <li class="nav-item me-2">
+                                <a class="nav-link <%= actual === 'perfil' ? 'active-page' : '' %>" href="/perfil" title="Ver mi perfil">
+                                    <i class="bi bi-person-circle me-1"></i><%= usuario.nombre %>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/logout" title="Cerrar sesión">
+                                    <i class="bi bi-box-arrow-left fs-5"></i>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>

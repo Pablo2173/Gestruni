@@ -1,0 +1,83 @@
+<%- include('partials/header', { title: 'Mi Perfil', actual: 'perfil' }) %>
+
+<main class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/index.html">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Mi Perfil</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">Mi Perfil de Usuario</h2>
+
+    <div id="alerta-perfil" class="d-none" role="alert" aria-live="polite"></div>
+
+    <div class="row g-4">
+        <section class="col-lg-5" aria-labelledby="titulo-resumen-cuenta">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h3 id="titulo-resumen-cuenta" class="h4 mb-0">
+                            <i class="bi bi-person-circle text-success me-2"></i>Datos de la cuenta
+                        </h3>
+                        <span id="perfil-badge-rol" class="badge bg-success fs-6"></span>
+                    </div>
+
+                    <ul class="list-unstyled mb-4" id="lista-datos-perfil">
+                        <li class="mb-2"><strong>Nombre:</strong> <span id="perfil-texto-nombre">-</span></li>
+                        <li class="mb-2"><strong>Correo electrónico:</strong> <span id="perfil-texto-email">-</span></li>
+                        <li class="mb-2"><strong>Fecha de registro:</strong> <span id="perfil-texto-fecha">-</span></li>
+                        <li class="mb-2"><strong>Estado de cuenta:</strong> <span id="perfil-texto-estado">-</span></li>
+                    </ul>
+
+                    <div class="pt-3 border-top">
+                        <h4 class="h6 text-uppercase text-muted mb-2" id="titulo-actividad-perfil">Resumen de actividad</h4>
+                        <p id="texto-actividad-perfil" class="mb-3">Cargando actividad...</p>
+                        <div id="accesos-rapidos-perfil" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-lg-7" aria-labelledby="titulo-editar-perfil">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 id="titulo-editar-perfil" class="h4 mb-3">Actualizar datos personales</h3>
+                    <form id="form-editar-perfil" class="row g-3" novalidate>
+                        <div class="col-12">
+                            <label for="input-perfil-nombre" class="form-label">Nombre completo *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="input-perfil-nombre" minlength="2" maxlength="100" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="input-perfil-email" class="form-label">Correo electrónico *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="input-perfil-email" maxlength="100" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="input-perfil-password" class="form-label">Nueva contraseña (opcional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="input-perfil-password" minlength="6" maxlength="100"
+                                    placeholder="Déjalo en blanco si no deseas cambiarla">
+                            </div>
+                            <div class="form-text">Mínimo 6 caracteres si decides modificar tu contraseña actual.</div>
+                        </div>
+
+                        <div class="col-12 pt-2">
+                            <button type="submit" class="btn border-success fw-semibold">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<%- include('partials/footer', { scripts: ['perfil'] }) %>

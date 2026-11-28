@@ -1,95 +1,110 @@
-//El modo estricto de JavaScript detecta errores comunes
 'use strict';
 
-// recupera en constantes los elementos del formulario y los campos de entrada
-const registroForm = document.querySelector('#registro-form');
-const nombre = document.querySelector('#nombre');
-const correo = document.querySelector('#correo');
-const contrasena = document.querySelector('#contrasena');
-const confirmacionContrasena = document.querySelector('#confirmacion-contrasena');
-const registroMensaje = document.querySelector('#registro-mensaje');
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('#registro-form');
+    const nombreInput = document.querySelector('#nombre');
+    const correoInput = document.querySelector('#correo');
+    const contrasenaInput = document.querySelector('#contrasena');
+    const confirmacionInput = document.querySelector('#confirmacion-contrasena');
+    const mensajeStatus = document.querySelector('#registro-mensaje');
 
-// Comprueba que las contraseñas coinciden.
-function contrasenyasIguales() {
-    if (confirmacionContrasena.value !== contrasena.value) {
-        confirmacionContrasena.setCustomValidity('Las contraseñas no coinciden.');
-        return;
+    if (!form) return;
+
+    function mostrarMensaje(texto, esError = false) {
+        if (!mensajeStatus) return;
+        mensajeStatus.textContent = texto;
+        mensajeStatus.className = esError
+            ? 'mt-3 mb-0 alert alert-danger'
+            : 'mt-3 mb-0 alert alert-success';
     }
 
-    confirmacionContrasena.setCustomValidity('');
-}
+    function validarFormularioCliente() {
+        let valido = true;
 
-// Ambos campos deben actualizar la validación cuando cambia su valor.
-contrasena.addEventListener('input', contrasenyasIguales);
-confirmacionContrasena.addEventListener('input', contrasenyasIguales);
+        // Nombre
+        if (nombreInput.value.trim().length < 2) {
+            nombreInput.classList.add('is-invalid');
+            valido = false;
+        } else {
+            nombreInput.classList.remove('is-invalid');
+            nombreInput.classList.add('is-valid');
+        }
 
-//campo puede ser: {nombre, correo, contrasena, confirmacionContrasena}
-//tiene comprobaciones generales de validación aplicables a todos los posibles campos
-function mostrarError(campo) {
-    const mensaje = document.querySelector(`#${campo.id}-error`);
-    campo.classList.add('is-invalid');
-    campo.setAttribute('aria-invalid', 'true');
+        // Correo
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(correoInput.value.trim())) {
+            correoInput.classList.add('is-invalid');
+            valido = false;
+        } else {
+            correoInput.classList.remove('is-invalid');
+            correoInput.classList.add('is-valid');
+        }
 
-    if (campo.validity.valueMissing) {
-        mensaje.textContent = 'Este campo es obligatorio.';
-    } else if (campo.validity.typeMismatch) {
-        mensaje.textContent = 'Introduce un correo electrónico válido.';
-    } else if (campo.validity.tooShort) {
-        mensaje.textContent = `Debe tener al menos ${campo.minLength} caracteres.`;
-    } else if (campo === confirmacionContrasena && campo.validity.customError) {
-        mensaje.textContent = 'Las contraseñas no coinciden.';
-    }
-}
+        // Contraseña (mínimo 8 caracteres, mayúscula, minúscula y número)
+        const pass = contrasenaInput.value;
+        const passFuerte = pass.length >= 8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass);
+        if (!passFuerte) {
+            contrasenaInput.classList.add('is-invalid');
+            const feedback = document.querySelector('#contrasena-error');
+            if (feedback) {
+                feedback.textContent = 'Debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.';
+            }
+            valido = false;
+        } else {
+            contrasenaInput.classList.remove('is-invalid');
+            contrasenaInput.classList.add('is-valid');
+        }
 
-function limpiarError(campo) {
-    campo.classList.remove('is-invalid');
-    campo.removeAttribute('aria-invalid');
-}
+        // Confirmación de contraseña
+        if (!confirmacionInput.value || confirmacionInput.value !== pass) {
+            confirmacionInput.classList.add('is-invalid');
+            valido = false;
+        } else {
+            confirmacionInput.classList.remove('is-invalid');
+            confirmacionInput.classList.add('is-valid');
+        }
 
-// Recupera los valores, valida el formulario y actualiza la página mediante el DOM.
-registroForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    contrasenyasIguales();
-
-    const nombreIntroducido = nombre.value.trim();
-    const correoIntroducido = correo.value.trim();
-
-    // Limpia los errores de validación anteriores
-
-    limpiarError(nombre);
-    limpiarError(correo);
-    limpiarError(contrasena);
-    limpiarError(confirmacionContrasena);
-
-
-    // Comprueba la validez de cada campo y muestra los errores correspondientes
-
-    if (!nombre.validity.valid) {
-        mostrarError(nombre);
+        return valido;
     }
 
-    if (!correo.validity.valid) {
-        mostrarError(correo);
-    }
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (mensajeStatus) {
+            mensajeStatus.textContent = '';
+            mensajeStatus.className = 'mt-3 mb-0';
+        }
 
-    if (!contrasena.validity.valid) {
-        mostrarError(contrasena);
-    }
+        if (!validarFormularioCliente()) {
+            return;
+        }
 
-    if (!confirmacionContrasena.validity.valid) {
-        mostrarError(confirmacionContrasena);
-    }
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre: nombreInput.value.trim(),
+                    email: correoInput.value.trim(),
+                    password: contrasenaInput.value,
+                    confirmPassword: confirmacionInput.value
+                })
+            });
 
-    //Comprueba la validez del formulario copmleto
-    if (!registroForm.checkValidity()) {
-        registroForm.reportValidity();
-        return;
-    }
+            const data = await response.json();
 
-    //Muestra la confirmación en el DOM
-    registroMensaje.textContent =
-        `Registro completado para ${nombreIntroducido} (${correoIntroducido}).`;
-    registroMensaje.className = 'mt-3 mb-0 text-success';
-    //después de mostrar el mensaje de éxito, se limpia el formulario
-    registroForm.reset();
+            if (!response.ok) {
+                mostrarMensaje(data.error || 'No se pudo completar el registro.', true);
+                return;
+            }
+
+            mostrarMensaje('Cuenta creada correctamente. Redirigiendo al inicio de sesión...', false);
+            form.reset();
+            setTimeout(() => {
+                window.location.href = './login.html';
+            }, 1200);
+        } catch (err) {
+            console.error('Error en registro:', err);
+            mostrarMensaje('Error de conexión con el servidor.', true);
+        }
+    });
 });

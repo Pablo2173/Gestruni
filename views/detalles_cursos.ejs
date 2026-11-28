@@ -1,0 +1,99 @@
+<%- include('partials/header', { title: 'Detalle del curso', actual: 'detalles_cursos' }) %>
+
+<main class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/index.html">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/cursos.html">Cursos</a></li>
+            <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-curso">Detalle del curso</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <h2 class="mb-0 me-auto" id="titulo-pagina-curso">Detalle del curso</h2>
+
+        <div class="d-flex align-items-center gap-2">
+            <label for="selector-curso" class="form-label mb-0 fw-semibold">Cambiar curso:</label>
+            <select id="selector-curso" class="form-select"></select>
+        </div>
+
+        <button id="boton-editar-curso"
+            class="btn border-success <%= (!usuario || usuario.rol !== 'admin') ? 'd-none' : '' %>"
+            type="button" data-bs-toggle="collapse" data-bs-target="#panel-editar-curso"
+            aria-controls="panel-editar-curso" aria-expanded="false">
+            Editar curso
+        </button>
+    </div>
+
+    <!-- Formulario colapsable de edición (solo visible para admin) -->
+    <section id="panel-editar-curso" class="collapse card mb-4" aria-labelledby="titulo-editar-curso">
+        <div class="card-body">
+            <h3 id="titulo-editar-curso" class="h4 mb-3">Editar información del curso</h3>
+            <form id="editar-curso-form" class="row g-3" novalidate>
+                <div class="col-md-6">
+                    <label for="edit-nombre" class="form-label">Nombre del curso *</label>
+                    <input type="text" class="form-control" id="edit-nombre" maxlength="100" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="edit-docente" class="form-label">Docente *</label>
+                    <select class="form-select" id="edit-docente" required></select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="edit-aula" class="form-label">Aula *</label>
+                    <select class="form-select" id="edit-aula" required></select>
+                </div>
+
+                <div class="col-12">
+                    <label for="edit-descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="edit-descripcion" rows="3"></textarea>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="edit-fecha-inicio" class="form-label">Fecha de inicio *</label>
+                    <input type="date" class="form-control" id="edit-fecha-inicio" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="edit-fecha-fin" class="form-label">Fecha de fin *</label>
+                    <input type="date" class="form-control" id="edit-fecha-fin" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="edit-horario" class="form-label">Horario</label>
+                    <input type="text" class="form-control" id="edit-horario" maxlength="100">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="edit-plazas" class="form-label">Plazas totales *</label>
+                    <input type="number" class="form-control" id="edit-plazas" min="1" required>
+                </div>
+
+                <div class="col-md-8">
+                    <label for="edit-imagen" class="form-label">Ruta de imagen</label>
+                    <input type="text" class="form-control" id="edit-imagen" maxlength="255">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="edit-estado" class="form-label">Estado</label>
+                    <select class="form-select" id="edit-estado">
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn border-success">Guardar cambios</button>
+                    <button type="button" class="btn border-secondary" data-bs-toggle="collapse"
+                        data-bs-target="#panel-editar-curso">Cancelar</button>
+                </div>
+            </form>
+            <p id="editar-curso-mensaje" class="mt-3 mb-0" role="status" aria-live="polite"></p>
+        </div>
+    </section>
+
+    <section id="contenedor-detalle-curso" aria-live="polite"></section>
+</main>
+
+<%- include('partials/footer', { scripts: ['detalles_cursos'] }) %>

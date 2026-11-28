@@ -1,0 +1,14 @@
+<footer>
+        <p>&copy; 2026 Gestruni · Plataforma de Gestión de Cursos · Aplicaciones Web</p>
+    </footer>
+
+    <script src="/public/js/bootstrap.bundle.min.js"></script>
+    <script src="/public/js/navbar.js"></script>
+    <% if (typeof scripts !== 'undefined' && Array.isArray(scripts)) { %>
+        <% scripts.forEach((script) => { %>
+            <script src="/public/js/<%= script %>.js"></script>
+        <% }) %>
+    <% } %>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<%- include('partials/header', { title: 'Catálogo de Cursos', actual: 'cursos' }) %>
+
+<main class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/index.html">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cursos</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <h2 class="mb-0">Catálogo de cursos</h2>
+        <button id="boton-alta-curso" class="btn border-success <%= (!usuario || usuario.rol !== 'admin') ? 'd-none' : '' %>"
+            type="button" data-bs-toggle="collapse" data-bs-target="#panel-alta-curso"
+            aria-controls="panel-alta-curso" aria-expanded="false">
+            <i class="bi bi-journal-bookmark me-1"></i>Nuevo curso
+        </button>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <form id="busqueda-cursos" class="d-flex flex-grow-1" role="search">
+            <label for="campo-busqueda" class="visually-hidden">Buscar cursos</label>
+            <input type="search" id="campo-busqueda" class="form-control"
+                placeholder="Buscar por nombre, docente o aula...">
+        </form>
+        <button type="button" id="boton-filtrar-plazas" class="btn border-secondary">
+            Solo con plazas libres
+        </button>
+        <button type="button" id="boton-restablecer-filtros" class="btn border-secondary">
+            Restablecer
+        </button>
+    </div>
+
+    <!-- Formulario colapsable de alta de curso (solo admin) -->
+    <section id="panel-alta-curso" class="collapse card mb-4" aria-labelledby="titulo-alta-curso">
+        <div class="card-body">
+            <h3 id="titulo-alta-curso" class="h4 mb-3">Registrar nuevo curso</h3>
+            <form id="alta-curso-form" class="row g-3" novalidate>
+                <div class="col-md-6">
+                    <label for="curso-nombre" class="form-label">Nombre del curso *</label>
+                    <input type="text" class="form-control" id="curso-nombre" name="nombre" maxlength="100" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="curso-docente" class="form-label">Docente *</label>
+                    <select class="form-select" id="curso-docente" name="id_docente" required>
+                        <option value="">Selecciona docente...</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="curso-aula" class="form-label">Aula *</label>
+                    <select class="form-select" id="curso-aula" name="id_aula" required>
+                        <option value="">Selecciona aula...</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label for="curso-descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="curso-descripcion" name="descripcion" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="curso-fecha-inicio" class="form-label">Fecha de inicio *</label>
+                    <input type="date" class="form-control" id="curso-fecha-inicio" name="fecha_inicio" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="curso-fecha-fin" class="form-label">Fecha de fin *</label>
+                    <input type="date" class="form-control" id="curso-fecha-fin" name="fecha_fin" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="curso-horario" class="form-label">Horario</label>
+                    <input type="text" class="form-control" id="curso-horario" name="horario"
+                        placeholder="Ej: L-X 17:00-20:00" maxlength="100">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="curso-plazas" class="form-label">Plazas totales *</label>
+                    <input type="number" class="form-control" id="curso-plazas" name="plazas" min="1" value="20" required>
+                </div>
+
+                <div class="col-12">
+                    <label for="curso-imagen" class="form-label">Ruta de imagen (opcional)</label>
+                    <input type="text" class="form-control" id="curso-imagen" name="imagen"
+                        placeholder="img/cursos/curso01.png" maxlength="255">
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn border-success">Guardar curso</button>
+                    <button type="button" class="btn border-secondary" data-bs-toggle="collapse"
+                        data-bs-target="#panel-alta-curso">Cancelar</button>
+                </div>
+            </form>
+            <p id="alta-curso-mensaje" class="mt-3 mb-0" role="status" aria-live="polite"></p>
+        </div>
+    </section>
+
+    <!-- Catálogo dinámico -->
+    <section id="catalogo-cursos" class="row g-4 mt-1" aria-live="polite"></section>
+
+    <!-- Modal de confirmación de borrado lógico -->
+    <div class="modal fade" id="confirmar-eliminar-modal" tabindex="-1"
+        aria-labelledby="titulo-modal-eliminar" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="titulo-modal-eliminar" class="modal-title h5">Desactivar curso</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="texto-modal-eliminar" class="mb-0"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn border-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirmar-eliminar-boton" class="btn border-danger">Desactivar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer', { scripts: ['cursos'] }) %>

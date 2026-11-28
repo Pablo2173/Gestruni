@@ -1,0 +1,67 @@
+<%- include('partials/header', { title: 'Inicio', actual: 'index' }) %>
+
+<main class="container py-4">
+    <section class="hero-gestruni">
+        <h2>Plataforma de Formación Continua</h2>
+        <p class="mb-4">
+            Consulta nuestra oferta académica, conoce al equipo docente, revisa la disponibilidad de aulas y gestiona tus matrículas en tiempo real.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="/cursos.html" class="btn btn-light fw-semibold">
+                <i class="bi bi-book me-2"></i>Explorar catálogo de cursos
+            </a>
+            <% if (!usuario) { %>
+                <a href="/login.html" class="btn btn-outline-light">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
+                </a>
+            <% } else { %>
+                <a href="/matriculas.html" class="btn btn-outline-light">
+                    <i class="bi bi-journal-check me-2"></i>Ir a mis matrículas
+                </a>
+            <% } %>
+        </div>
+    </section>
+
+    <section class="row g-4" aria-label="Accesos rápidos">
+        <div class="col-md-4">
+            <article class="card card-hover h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5"><i class="bi bi-journal-bookmark text-success me-2"></i>Catálogo de Cursos</h3>
+                    <p class="card-text text-muted">
+                        Filtra cursos activos por temática, docente o aula y consulta las plazas libres al instante.
+                    </p>
+                    <a href="/cursos.html" class="btn border-success mt-auto align-self-start">Ver cursos</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-md-4">
+            <article class="card card-hover h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5"><i class="bi bi-people text-success me-2"></i>Docentes y Aulas</h3>
+                    <p class="card-text text-muted">
+                        Información actualizada del profesorado especialista y los espacios equipados del centro.
+                    </p>
+                    <div class="d-flex gap-2 mt-auto">
+                        <a href="/docentes.html" class="btn border-success">Docentes</a>
+                        <a href="/aulas.html" class="btn border-success">Aulas</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-md-4">
+            <article class="card card-hover h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5"><i class="bi bi-universal-access text-success me-2"></i>Accesibilidad</h3>
+                    <p class="card-text text-muted">
+                        Personaliza el contraste, activa el modo oscuro o ajusta el tamaño del texto a tus preferencias.
+                    </p>
+                    <a href="/accesibilidad.html" class="btn border-success mt-auto align-self-start">Configurar</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+
+<%- include('partials/footer', { scripts: [] }) %>
